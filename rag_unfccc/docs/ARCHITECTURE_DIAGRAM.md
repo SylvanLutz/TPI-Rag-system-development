@@ -2,58 +2,53 @@
 
 ## 1. Current State: Refactored System Architecture
 
-This diagram shows the **current implementation** with the new modular architecture we've built, styled similar to LobbyMap pipeline:
+This diagram shows the **current implementation** with the new modular architecture we've built:
 
 ```mermaid
-graph TB
-    subgraph 1["1. Data Ingestion & Knowledge Base"]
-        direction TB
+graph LR
+    subgraph 1["1. Data Ingestion & Storage"]
         A[UNFCCC Scraper] --> B[PDF Documents]
-        B --> C[(Database<br/>PostgreSQL)]
-        C --> D[Metadata Extraction<br/>document_type, dates, URLs]
+        B --> C[(PostgreSQL)]
+        C --> D[Metadata Extraction<br/>type, dates, URLs]
     end
     
-    subgraph 2["2. RAG Processing Pipeline"]
-        direction TB
-        B --> E[Chunking<br/>2_chunk.py]
-        E --> F[Embedding Generation<br/>3_embed.py]
-        F --> G[Transformer/Word2Vec]
+    subgraph 2["2. R&D Processing Pipeline"]
+        B --> E[Cleansing<br/>2_chunk.py]
+        E --> F[Embedding<br/>3_embed.py]
+        F --> G[Transformers<br/>Word2Vec]
         G --> H[Store]
         H --> I[(PostgreSQL<br/>+ pgvector)]
     end
     
     subgraph 3["3. Entity & Prompt Management"]
-        direction TB
-        J[Entity JSON Files<br/>countries.json<br/>companies.json<br/>banks.json] --> K[EntityManager]
+        J[Entity JSON<br/>countries.json<br/>companies.json<br/>banks.json] --> K[EntityManager]
         K --> L[Entity Filtering<br/>Type, Sector, Geography]
-        M[TPI Centre ID<br/>EP4a, EP4ai] --> N[TPI Centre Mapping<br/>tpi_centres.py]
-        N --> O[Prompt Registry<br/>questions/prompts/]
+        M[TPI Centre ID<br/>EP4a, EP4ai] --> N[TPI Mapping<br/>tpi_centres.py]
+        N --> O[Prompt Registry<br/>prompts/]
         O --> P{Project?}
-        P -->|ASCOR| Q[ASCOR Prompts]
-        P -->|Banking| R[Banking Prompts]
-        P -->|Shared| S[Shared Prompts]
-        Q --> T[Prompt Metadata<br/>entity_types, document_types<br/>top_k, keywords]
+        P -->|ASCOR| Q[ASCOR]
+        P -->|Banking| R[Banking]
+        P -->|Shared| S[Shared]
+        Q --> T[Prompt Metadata<br/>entity_types, doc_types<br/>top_k, keywords]
         R --> T
         S --> T
     end
     
     subgraph 4["4. Batch Processing & Retrieval"]
-        direction TB
         L --> U[Batch Process<br/>batch_process.py]
-        U --> V[Entity Loop<br/>Filtered by type]
-        V --> W[Retrieval<br/>4_retrieve.py]
-        I -->|Semantic Search| W
-        W --> X[Top K Chunks]
+        U --> V[Entity Loop]
+        I -->|Semantic Search| W[Retrieval<br/>4_retrieve.py]
+        V --> W
+        W --> X[Top N Chunks]
         X --> Y[LLM Response<br/>5_llm_response.py]
         T --> Y
-        Y --> Z[Response Processing<br/>with Citations]
+        Y --> Z[Response Reasoning<br/>with Citations]
     end
     
     subgraph 5["5. Output Generation"]
-        direction TB
-        Z --> AA[CSV/Excel Export<br/>6_output.py]
-        AA --> AB[Organized Structure<br/>outputs/csv/entity_type/TPI_ID/date/]
-        AB --> AC[Source Citations<br/>Chunk metadata, pages, URLs]
+        Z --> AA[CSV/Excel Report<br/>6_output.py]
+        AA --> AB[Structure<br/>output/entity_type/TPI_ID/date/]
+        AB --> AC[Text or Citations<br/>metadata, pages, URLs]
     end
     
     D --> I
@@ -77,40 +72,36 @@ graph TB
 
 ## 2. Future State: Ideal TPI Centre RAG System
 
-This diagram shows the **target architecture** for MVP (January 2026) and end-state vision, styled similar to LobbyMap pipeline:
+This diagram shows the **target architecture** for MVP (January 2026) and end-state vision:
 
 ```mermaid
-graph TB
-    subgraph 1["1. Data Ingestion & Knowledge Base"]
-        direction TB
+graph LR
+    subgraph 1["1. Data Ingestion & Storage"]
         A1[UNFCCC Scraper] --> B1[Document Repos<br/>ASCOR, Banking]
-        B1 --> C1[Manual Upload<br/>UI]
-        C1 --> D1[Targeted Scrapers<br/>CPR, Other]
-        D1 --> E1[(Database<br/>PostgreSQL)]
+        B1 --> C1[Manual Upload]
+        C1 --> D1[Targeted Scrapers<br/>CPR]
+        D1 --> E1[(PostgreSQL)]
         A1 --> E1
         B1 --> E1
         C1 --> E1
-        D1 --> E1
         E1 --> F1[PDF Documents]
         F1 --> G1[Metadata Tagging<br/>Type, Date, Source]
         G1 --> H1[Noise Filtering]
     end
     
-    subgraph 2["2. RAG Processing Pipeline"]
-        direction TB
+    subgraph 2["2. R&D Processing Pipeline"]
         H1 --> I1[Parse]
-        I1 --> J1[Docling<br/>Layout-Aware]
+        I1 --> J1[Docling]
         J1 --> K1[Chunk]
         K1 --> L1[Layout Chunker]
         L1 --> M1[Embed]
-        M1 --> N1[Nomic/Qwen<br/>Embeddings]
+        M1 --> N1[Nomic/Qwen]
         N1 --> O1[Store]
         O1 --> P1[(PostgreSQL<br/>+ pgvector)]
     end
     
     subgraph 3["3. Entity & Prompt Management"]
-        direction TB
-        Q1[Entity JSON Files<br/>countries.json<br/>companies.json<br/>banks.json] --> R1[EntityManager]
+        Q1[Entity JSON<br/>countries.json<br/>companies.json<br/>banks.json] --> R1[EntityManager]
         R1 --> S1[Metadata Filter<br/>Type, Sector, Date]
         T1[TPI Centre IDs<br/>EP4a, EP4ai] --> U1[Prompt Registry]
         U1 --> V1[Project Prompts<br/>ASCOR, Banking]
@@ -120,43 +111,40 @@ graph TB
     end
     
     subgraph 4["4. Query & Retrieval API"]
-        direction TB
         X1 --> Y1[Query Input]
         Y1 --> Z1[Prompt]
         Z1 --> AA1[Embed Query]
         AA1 --> AB1[Nomic/Qwen]
         P1 -->|Semantic Search| AC1[API]
-        AC1 --> AD1[Retrieve<br/>Top K Chunks]
+        AC1 --> AD1[Retrieve]
         AD1 --> AE1[Evidences]
         AE1 --> AF1[Sort]
         AF1 --> AG1[Reranker]
         AB1 --> AG1
         AG1 --> AH1[Ranked Evidence]
-        AH1 --> AI1[LLM<br/>Response Generation]
+        AH1 --> AI1[LLM]
         AI1 --> AJ1[Response<br/>with Citations]
     end
     
     subgraph 5["5. Analyst Review & Feedback"]
-        direction TB
-        AJ1 --> AK1[Analyst Review<br/>UI]
-        AK1 --> AL1[Chunk Curation<br/>Mark Relevant/Irrelevant]
+        AJ1 --> AK1[Analyst Review]
+        AK1 --> AL1[Chunk Curation<br/>Relevant/Irrelevant]
         AL1 --> AM1[Feedback Store]
-        AM1 -->|Improve Retrieval| P1
-        AK1 --> AN1[Validate Results]
+        AM1 -->|Improve| P1
+        AK1 --> AN1[Validate]
         AN1 --> AO1[Scorecard<br/>Excel/CSV]
     end
     
     subgraph 6["6. Evaluation & Tracing"]
-        direction TB
-        AJ1 -->|Store| AP1[(MongoDB<br/>or PostgreSQL)]
+        AJ1 -->|Store| AP1[(MongoDB)]
         Y1 -->|Artifacts| AP1
         AP1 -->|If Annotated| AQ1[Annotation<br/>Stance, Rank, Evidence]
-        AP1 -->|If Annotated| AR1[Metrics<br/>Recall, Precision, Agreement]
+        AP1 -->|If Annotated| AR1[Metrics<br/>Recall, Precision]
         AQ1 --> AR1
     end
     
     S1 --> AC1
-    P1 --> AC1
+    G1 --> P1
     
     style E1 fill:#FFE0B2,stroke:#F57C00,stroke-width:2px
     style P1 fill:#C8E6C9,stroke:#388E3C,stroke-width:2px
