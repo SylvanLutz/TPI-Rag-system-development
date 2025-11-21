@@ -507,5 +507,109 @@ graph LR
 
 ---
 
+## 9. Compact Diagrams for Document Export
+
+### Compact Current State (For Presentations/Reports)
+
+**Ultra-simplified version for strategic documents:**
+
+```mermaid
+graph LR
+    A[Documents] --> B[Process & Index]
+    B --> C[Query System]
+    C --> D[Analyst Review]
+    D --> E[Reports]
+    
+    F[Entity Management] --> C
+    G[Prompt System] --> C
+    
+    style C fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    style D fill:#FFF9C4,stroke:#F57F17,stroke-width:2px
+```
+
+### Compact Future State (For Presentations/Reports)
+
+**Simplified vision diagram:**
+
+```mermaid
+graph LR
+    A[Multi-Source<br/>Documents] --> B[Intelligent<br/>Processing]
+    B --> C[Knowledge<br/>Base]
+    C --> D[Analyst<br/>Queries]
+    D --> E[Feedback<br/>Loop]
+    E --> C
+    D --> F[Multi-Project<br/>Outputs]
+    
+    style D fill:#E3F2FD,stroke:#1976D2,stroke-width:3px
+    style E fill:#E1BEE7,stroke:#7B1FA2,stroke-width:2px
+```
+
+### Key Value Propositions (One-Liner Diagram)
+
+```mermaid
+graph LR
+    A[TPI RAG System] --> B[Speed:<br/>Rapid Results]
+    A --> C[Quality:<br/>Analyst Validated]
+    A --> D[Scale:<br/>Multi-Project]
+    A --> E[Control:<br/>TPI Owned]
+    
+    style A fill:#E3F2FD,stroke:#1976D2,stroke-width:3px
+```
+
+**Note for Export:**
+- These compact diagrams can be exported to PNG/SVG using:
+  - Online: [mermaid.live](https://mermaid.live) → Export as PNG/SVG
+  - CLI: `npm install -g @mermaid-js/mermaid-cli && mmdc -i diagram.mmd -o diagram.png`
+  - VS Code: Use "Markdown Preview Mermaid Support" extension with export feature
+
+---
+
+## 10. Entity-Document Linkage Architecture
+
+### Current State: Separate Systems
+
+```mermaid
+graph TD
+    A[Entity Management<br/>JSON Files] --> B[EntityManager<br/>Filtering]
+    C[Database<br/>countries table] --> D[Documents<br/>country field]
+    
+    B -.->|No direct link| D
+    
+    style A fill:#E3F2FD
+    style C fill:#FFE0B2
+    style D fill:#C8E6C9
+```
+
+**Current Issue:** Entity management and document metadata are separate systems with no direct linkage.
+
+### Proposed: Linked Architecture
+
+```mermaid
+graph TD
+    A[Entity Management<br/>JSON - Source of Truth] --> B[Entity Sync Script]
+    B --> C[Database Entities Table<br/>with Metadata]
+    C --> D[Documents Table<br/>entity_id FK]
+    A --> E[EntityManager<br/>Validation]
+    E --> D
+    
+    C --> F[Metadata Filtering<br/>by income_group, sector, etc.]
+    D --> F
+    
+    style A fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    style C fill:#C8E6C9,stroke:#388E3C,stroke-width:2px
+    style F fill:#FFF9C4,stroke:#F57F17,stroke-width:2px
+```
+
+**Benefits:**
+- ✅ Single source of truth (JSON files)
+- ✅ Rich filtering by entity metadata
+- ✅ Referential integrity
+- ✅ Consistent entity recognition
+
+**See `DIAGRAM_OPTIMIZATION_AND_LINKAGE.md` for detailed implementation plan.**
+
+---
+
 **Last Updated**: November 18, 2025  
-**Status**: Current state implemented, future state planned for MVP (January 2026)
+**Status**: Current state implemented, future state planned for MVP (January 2026)  
+**Related Docs**: `DIAGRAM_OPTIMIZATION_AND_LINKAGE.md` (diagram export strategies & entity-document linkage)

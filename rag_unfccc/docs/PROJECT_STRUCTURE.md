@@ -95,7 +95,10 @@ rag_unfccc/
 ├── local_models/         # Local model files (Word2Vec)
 ├── manual/               # Manual utility scripts
 ├── scripts/              # Utility scripts
-│   └── run_sql_in_docker.ps1  # Windows workaround for initial DB setup
+│   ├── run_sql_in_docker.ps1  # Windows workaround for initial DB setup
+│   ├── export_diagrams.py      # Export Mermaid diagrams to PNG/SVG
+│   ├── export_diagrams.ps1    # PowerShell alternative (basic)
+│   └── README.md              # Scripts documentation
 └── requirements/         # Python dependencies
     ├── requirements.txt  # Main dependencies
     └── scrape.txt        # Scraping-specific dependencies
